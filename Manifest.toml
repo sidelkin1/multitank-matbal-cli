@@ -193,6 +193,12 @@ git-tree-sha1 = "04d13bfa8ef11720c24e4d840c0033d145537df7"
 uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
 version = "0.9.17"
 
+[[FiniteDiff]]
+deps = ["ArrayInterface", "LinearAlgebra", "Requires", "SparseArrays", "StaticArrays"]
+git-tree-sha1 = "ec299fdc8f49ae450807b0cb1d161c6b76fd2b60"
+uuid = "6a86dc24-6348-571c-b903-95158fe2bd41"
+version = "2.10.1"
+
 [[Formatting]]
 deps = ["Printf"]
 git-tree-sha1 = "8339d61043228fdd3eb658d86c926cb282ae72a8"
@@ -398,12 +404,12 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 
 [[MultiTankMaterialBalance]]
-deps = ["AMD", "CSV", "DataFrames", "DataFramesMeta", "Dates", "LinearAlgebra", "LoopVectorization", "Metis", "Printf", "RecursiveFactorization", "SparseArrays", "StringEncodings", "SuiteSparse", "UnPack", "Underscores"]
-git-tree-sha1 = "12823ae8d58e2384498a6a994314898caf7da5e0"
+deps = ["AMD", "CSV", "DataFrames", "DataFramesMeta", "Dates", "FiniteDiff", "LinearAlgebra", "LoopVectorization", "Metis", "Printf", "RecursiveFactorization", "SparseArrays", "StringEncodings", "SuiteSparse", "UnPack", "Underscores"]
+git-tree-sha1 = "0f8c0bb693a4670e4c1f3aeabb75273879eede1e"
 repo-rev = "main"
 repo-url = "https://github.com/sidelkin1/MultiTankMaterialBalance.jl"
 uuid = "2e2feaf3-8cf3-4c62-867a-fb490429e538"
-version = "0.3.3"
+version = "0.3.4"
 
 [[MutableArithmetics]]
 deps = ["LinearAlgebra", "SparseArrays", "Test"]
@@ -579,9 +585,9 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[SpecialFunctions]]
 deps = ["ChainRulesCore", "IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
-git-tree-sha1 = "85e5b185ed647b8ee89aa25a7788a2b43aa8a74f"
+git-tree-sha1 = "5ba658aeecaaf96923dce0da9e703bd1fe7666f9"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
-version = "2.1.3"
+version = "2.1.4"
 
 [[Static]]
 deps = ["IfElse"]
