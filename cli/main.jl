@@ -10,23 +10,23 @@ function parse_commandline()
 
     @add_arg_table s begin
         "--options"
-            help = "Путь к файлу с параметрами расчета"
+            help = "Path to the file with calculation settings"
             arg_type = String
             required = true
         "--tank_params"
-            help = "Путь к файлу с параметрами блоков"
+            help = "Path to the file with tank parameters"
             arg_type = String
             required = true
         "--tank_prod"
-            help = "Путь к файлу с отборами внутри блоков"
+            help = "Path to the file with tank production/injection data"
             arg_type = String
             required = true
         "--result_params"
-            help = "Путь к файлу с результатами адаптации параметров блоков"
+            help = "Path to the file with calculated tank parameters"
             arg_type = String
             required = true
         "--result_prod"
-            help = "Путь к файлу с расчетными давлениями внутри блоков"
+            help = "Path to the file with calculated tank reservoir pressures"
             arg_type = String
             required = true
     end
@@ -37,28 +37,28 @@ end
 function main()
     parsed_args = parse_commandline()
     
-    # Параметры для расчета
+    # Settings for calculation
     opts = TOML.parsefile(parsed_args["options"])
     
-    # Разрядность формата вещественных чисел
+    # Float-point precision
     Float = eval(Meta.parse(opts["float"]))
 
-    # Исходные данные для расчета
+    # Initial data for calculation
     df_rates = read_rates(parsed_args["tank_prod"], opts["csv"])
     df_params = read_params(parsed_args["tank_params"], opts["csv"])
     process_params!(df_params, df_rates)
 
-    # Описание прямой задачи
+    # Description of the forward problem
     prob = NonlinearProblem{Float}(df_rates, df_params)
 
-    # Способ масштабирования параметров
+    # Parameter scaling method
     if opts["optimizer"]["scaling"] == "linear"
         scale = LinearScaling{Float}(df_params)
     elseif opts["optimizer"]["scaling"] == "sigmoid"
         scale = SigmoidScaling{Float}(df_params)
     end
 
-    # Способ решениия СЛАУ
+    # Linear equation solution method
     if opts["solver"]["linalg"] == "dense"
         linalg = DenseLinearSolver{Float}(prob)
     elseif opts["solver"]["linalg"] == "recursive"
@@ -68,16 +68,16 @@ function main()
         linalg = SparseLinearSolver{Float}(prob; reorder)
     end
 
-    # Алгоритм решения прямой задачи
+    # Algorithm for solving the forward problem
     solver = NewtonSolver{Float}(prob, linalg, opts["solver"])
-    # Список оптимизируемых параметров
+    # List of parameters to be fitted
     fset = FittingSet{Float}(df_params, prob, scale)
-    # Целевая функция
+    # Objective function
     targ = TargetFunction{Float}(df_rates, df_params, prob, fset, opts["target_fun"])
-    # Алгоритм расчета градиента целевой функции
+    # Algorithm for calculating the gradient of the objective function
     adjoint = AdjointSolver{Float}(prob, targ, linalg, fset)
 
-    # Адаптация модели
+    # History-matching of model
     optim_pkg = Symbol(opts["optimizer"]["package"])
     maxiters = opts["optimizer"]["maxiters"]
     optim_opts = opts["optimizer"][String(optim_pkg)]
@@ -85,10 +85,10 @@ function main()
     initial_x = copy(getparams!(fset))
     res = optimize(optim_fun, initial_x, maxiters, optim_opts, scale, Val(optim_pkg))
 
-    # Распечатка результата
+    # Print the results
     print_result(res, initial_x, optim_fun, targ, Val(optim_pkg))
 
-    # Сохраняем результаты    
+    # Save the results   
     save_rates!(df_rates, prob, parsed_args["result_prod"], opts["csv"])
     save_params!(df_params, fset, targ, parsed_args["result_params"], opts["csv"])
 

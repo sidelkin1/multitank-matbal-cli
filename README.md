@@ -1,170 +1,172 @@
 # multitank-matbal-cli
 
-Реализован интерфес коммандной строки (CLI) для пакета [MultiTankMaterialBalance](https://github.com/sidelkin1/MultiTankMaterialBalance.jl).
+*Read this in other languages: [English](README.md), [Русский](README.ru.md)*
 
-## Быстрая установка
+Command Line Interface (CLI) for the package [MultiTankMaterialBalance](https://github.com/sidelkin1/MultiTankMaterialBalance.jl) is implemented.
 
-Предварительно должны быть установлены [Julia](http://julialang.org/downloads/) и [Git Bash](https://git-scm.com/downloads). Далее требуется
+## Quick installation
 
-- Скачать CLI репозиторий с помощью команды 
+[Julia](http://julialang.org/downloads/) and [Git Bash](https://git-scm.com/downloads) must be installed first. Next you need
+
+- Download CLI repository using command
 
 ```
 git clone https://github.com/sidelkin1/multitank-matbal-cli
 ```
 
-- Запустить `Julia REPL` и выполнить команду 
+- Start `Julia REPL` and run the command
  
 ```julia
 pwd("path/to/multitank-matbal-cli")
 ```
 
-где требуется указать правильный путь к скачанному CLI репозиторию
+where you need to specify the correct path to the downloaded CLI repository.
 
-- Установить дополнительно требуемые пакеты через `Julia REPL` с помощью команды
+- Install additional required packages via `Julia REPL` with the command
  
 ```julia
 using Pkg; Pkg.activate("."); Pkg.instantiate()
 ```
 
-## Коммандный интерфейс
+## Command interface
 
-Внутри каталога со скачанным репозиторием находится папка `cli`, в которой для запуска основного скрипта `main.jl` требуется запустить пакетный файл `start.bat`.
+Inside the directory with the downloaded repository there is the `cli` folder, in which for the running the main script `main.jl` you need to run the batch file `start.bat`.
 
-### Аргументы коммандной строки
+### Command line arguments
 
-| Аргумент     | Описание |
+| Argument     | Description |
 | :---         |     :--- |
-| `--options` | Путь к файлу с параметрами работы скрипта `options.toml` |
-| `--tank_params` | Путь к файлу с начальными значениями параметров блоков `tank_params.csv` |
-| `--tank_prod` | Путь к файлу с историей добычи/закачки `tank_prod.csv` |
-| `--result_params` | Путь к файлу с рассчитанными значениями параметров блоков `result_params.csv` |
-| `--result_prod` | Путь к файлу с рассчитанными давлениями внутри блоков `result_prod.csv` |
+| `--options` | Path to the file with the parameters of the script `options.toml` |
+| `--tank_params` | Path to the file with the initial values of the tank parameters `tank_params.csv` |
+| `--tank_prod` | Path to file with production/injection history `tank_prod.csv` |
+| `--result_params` | Path to the file with calculated tank parameter values `result_params.csv` |
+| `--result_prod` | Path to the file with calculated reservoir pressures inside the tanks `result_prod.csv` |
 
-### Параметры работы скрипта
+### Script parameters
 
-| Аргумент     | Описание |
+| Argument     | Description |
 | :---         |  :---    |
-| `float` | Разрядность вещественных чисел |
-| **[csv]** | **Параметры для чтения csv-файлов** |
-| `dateformat` | Формат даты |
-| `delim` | Формат разделителя |
-| **[solver]** | **Настройки основного расчетчика** |
-| `linalg` | Метод решения линейных уравнений (`dense`, `recursive`, `sparse`) |
-| `reorder` | Способ переупорядочивания разреженой матрицы (`none`, `amd`, `metis`) |
-| `maxiters` | Макисмальное число итераций в методе Ньютона |
-| `P_tol` | Максимальная погрешность по давлению |
-| `r_tol` | Максимальная погрешность по невязке |
-| **[optimizer]** | **Настройка пакета оптимизации** |
-| `package` | Пакет для минимизации целевой функции (`NLopt`, `SciPy`) |
-| `scaling` | Способ масштабирования параметров (`linear`, `sigmoid`) |
-| `maxiters` | Максимальное число итераций перебора методов оптимизации |
-| **[optimizer.[package name]]** | **Список методов оптимизации из пакета `package name`** |
-| `active` | Методы, которые будут перебираться в процессе минимизации целевой функции |
+| `float` | Floating-point precision |
+| **[csv]** | **Options for reading csv files** |
+| `dateformat` | Date format |
+| `delim` | Delimeter |
+| **[solver]** | **Base solver settings** |
+| `linalg` | Method for solving linear equations (`dense`, `recursive`, `sparse`) |
+| `reorder` | Reordering scheme of a sparse matrix (`none`, `amd`, `metis`) |
+| `maxiters` | Maximum number of iterations in Newton method |
+| `P_tol` | Maximum pressure tolerance |
+| `r_tol` | Maximum residual tolerance |
+| **[optimizer]** | **Optimization package settings** |
+| `package` | Objective function minimization package (`NLopt`, `SciPy`) |
+| `scaling` | Parameter scaling method (`linear`, `sigmoid`) |
+| `maxiters` | Maximum number of iterations for looping through optimization methods |
+| **[optimizer.[package name]]** | **List of optimization methods from the package `package name`** |
+| `active` | Methods that will be cycled in the process of minimizing the objective function |
 | `methods` | Список параметров метода оптимизации |
-| **[target_fun]** | **Веса членов целевой функции** |
-| `alpha_resp` | Cходимость пластового давления |
-| `alpha_bhp` | Cходимость забойного давления добывающих скважин |
-| `alpha_inj` | Cходимость забойного давления нагнетательных скважин |
-| `alpha_lb` | Штраф при снижении пластового давления ниже минимального уровня |
-| `alpha_ub` | Штраф при превышении пластового давления максимального уровня |
-| `alpha_l2` | L2-регуляризация |
+| **[target_fun]** | **Weights of objective function terms** |
+| `alpha_resp` | Reservoir pressure convergence |
+| `alpha_bhp` | Bottom-hole pressure of producers convergence |
+| `alpha_inj` | Bottom-hole pressure of injectors convergence |
+| `alpha_lb` | Penalty when reservoir pressure drops below the minimum level |
+| `alpha_ub` | Penalty when reservoir pressure exceeds the maximum level |
+| `alpha_l2` | L2-regularization |
 
-> **Примечание:** На текущий момент поддерживаются пакеты оптимизации [NLopt](https://github.com/JuliaOpt/NLopt.jl) и [SciPy](https://github.com/AtsushiSakai/SciPy.jl).
+> **Note:** The currently supported optimization packages are [NLopt](https://github.com/JuliaOpt/NLopt.jl) and [SciPy](https://github.com/AtsushiSakai/SciPy.jl).
 
-## Форматы данных
+## Data formats
 
-Внутри каталога со скачанным репозиторием находится папка `data`, в которой приведены примеры входных данных нужного формата для работы CLI.
+Inside the directory with the downloaded repository there is the `data` folder, which contains examples of input data required for the CLI to work.
 
-### Параметры блоков
+### Tank parameters
 
-Параметры блоков хранятся в файле `tank_params.csv`.
+Tank parameters are stored in the `tank_params.csv` file.
 
-#### Обозначения заголовка
+#### Header description
 
-| Заголовок     | Тип           | Описание |
+| Header     | Type           | Description |
 | :---:         |     :---:     |     :--- |
-| `Field` | `String` | Название месторождения |
-| `Tank` | `String` | Идентификатор блока |
-| `Reservoir` | `String` | Название пласта |
-| `Neighb` | `Union{Missing, String}` | Идентификатор соседнего блока |
-| `Parameter`| `String` | Обозначение параметра |
-| `Date` | `Date` | Дата начала интервала фиксации значения параметра |
-| `Init_value` | `Float64` | Начальное значения параметра |
-| `Min_value` | `Float64` | Минимальное значения параметра |
-| `Max_value` | `Float64` | Максимальное значения параметра |
-| `alpha` | `Union{Missing, Float64}` | Множитель L2-регуляризации |
+| `Field` | `String` | Field name |
+| `Tank` | `String` | Tank name |
+| `Reservoir` | `String` | Reservoir name |
+| `Neighb` | `Union{Missing, String}` | Neighbouring tank name |
+| `Parameter`| `String` | Parameter name |
+| `Date` | `Date` | Start date of the parameter value fixing interval |
+| `Init_value` | `Float64` | Initial parameter value |
+| `Min_value` | `Float64` | Minimum parameter value |
+| `Max_value` | `Float64` | Maximum parameter value |
+| `alpha` | `Union{Missing, Float64}` | Weight of L2-regularization term |
 
-> **Примечание:** Непустое значение `Neighb` имеет смысл только для параметра `Tconn`.
+> **Note:** The non-missing value `Neighb` only makes sense for the `Tconn` parameter.
 
-> **Примечание:** Пустое значение `alpha` соответствует нулевому значению.
+> **Note:** An missing `alpha` value corresponds to a null value.
 
-> **Примечание:** Для любого блока один и тот же параметр может иметь несколько **_непересекающихся_** интервалов фиксации своего значения. Т.о. каждый параметр можно представить в виде кусочно-постоянной функции от времени.
+> **Note:** For any tank, the same parameter can have several **_non-overlapping_** intervals for fixing its value. Thus, each parameter can be represented as a piecewise constant function of time.
 
-#### Обозначения параметров
+#### Parameter names
 
-| Параметр | Описание |
+| Parameter | Descrition |
 | :---:    |     :--- |
-| `Tconn` | Межблочная проводимость (м<sup>3</sup>/сут/бар)[^1]
-| `Pi` | Начальное пластовое давление (бар)[^2]
-| `Bwi` | Начальный объемный коэффициент воды (д.ед.)[^2]
-| `Boi` | Начальный объемный коэффициент нефти (д.ед.)[^2]
-| `cw` | Сжимаемость воды (1/бар)[^2]
-| `co` | Сжимаемость нефти (1/бар)[^2]
-| `cf` | Сжимаемость порового пространства (1/бар)[^1]
-| `Swi` | Начальная водонасыщенность (д.ед.)[^2]
-| `Vpi` | Начальный поровый объем (м<sup>3</sup>)[^1]
-| `Tconst` | Проводимость с границей постоянного давления (м<sup>3</sup>/сут/бар)[^1]
-| `Prod_index` | Коэффициент продуктивности (м<sup>3</sup>/сут/бар)[^3]
-| `Inj_index` | Коэффициент приемистости (м<sup>3</sup>/сут/бар)[^3]
-| `Frac_inj` | Коэффициент эффективности закачки (д.ед.)[^1]
-| `Min_Pres` | Минимальное давление в блоке (бар)[^2]
-| `Max_Pres` | Максимальное давление в блоке (бар)[^2]
-| `muw` | Вязкость воды (сПз)[^4]
-| `muo` | Вязкость нефти (сПз)[^4]
-| `krw_max` | Максимальное значение ОФП по воде (д.ед.)[^4]
-| `kro_max` | Максимальное значение ОФП по нефти (д.ед.)[^4]
-| `Geom_factor` | Геометрический фактор скважины ((м<sup>3</sup>/сут)*сПз/бар)[^5]
+| `Tconn` | Inter-tank transmissibility (m<sup>3</sup>/day/bar)[^1]
+| `Pi` | Initial reservoir pressure (atm)[^2]
+| `Bwi` | Initial fractional volume of water (frac.)[^2]
+| `Boi` | Initial fractional volume of oil (frac.)[^2]
+| `cw` | Water compressibility (1/bar)[^2]
+| `co` | Oil compressibility (1/bar)[^2]
+| `cf` | Porous volume compressibility (1/bar)[^2]
+| `Swi` | Initial water saturation (frac.)[^2]
+| `Vpi` | Initial porous volume (m<sup>3</sup>)[^1]
+| `Tconst` | Constant-pressure boundary transmissibility (m<sup>3</sup>/day/bar)[^1]
+| `Prod_index` | Productivity index (m<sup>3</sup>/day/bar)[^3]
+| `Inj_index` | Injectivity index (m<sup>3</sup>/day/bar)[^3]
+| `Frac_inj` | Injection efficiency factor (frac.)[^1]
+| `Min_Pres` | Minimum tank pressure (bar)[^2]
+| `Max_Pres` | Maximum tank pressure (bar)[^2]
+| `muw` | Water viscosity (cPs)[^4]
+| `muo` | Oil viscosity (cPs)[^4]
+| `krw_max` | Maximum water relative permeability value (frac.)[^4]
+| `kro_max` | Maximum oil relative permeability value (д.ед.)[^4]
+| `Geom_factor` | Well geometric factor ((m<sup>3</sup>/day)*cPs/bar)[^5]
 
-[^1]: Может быть настроен в процессе минимизации целевой функции.
-[^2]: Не может быть настроен в процессе минимизации целевой функции.
-[^3]: Настраивается автоматически после расчета пластового давления.
-[^4]: Зарезервировано. Не используется в расчетах.
-[^5]: Генерируется автоматически в результирующих файлах. Используется при расчете `Prod_index = Geom_factor * Total_mobility`, т.е. фактически настраивается параметр `Geom_factor` вместо `Prod_index`.
+[^1]: Can be fitted during objective function minimization.
+[^2]: Can't be fitted during objective function minimization.
+[^3]: It is fitted automatically after each reservoir pressure calculation.
+[^4]: Reserved. Not used in calculations.
+[^5]: Generated automatically in the resulting files. It's used when calculating `Prod_index = Geom_factor * Total_mobility`, i.e. actually `Geom_factor` is fitted instead of `Prod_index`.
 
-> **Примечание:** Для того, чтобы параметр рассматривался как требующий настройки, необходимо чтобы выполнялось условие `Min_value != Max_value`.
+> **Note:** In order for a parameter to be considered as requiring fitting, the condition `Min_value != Max_value` must be satisfied.
 
-> **Примечание:** Параметры `Prod_index` и `Inj_index`, у которых `Min_value == Max_value`, дополнительно делятся на следующие группы:
-> - если `Init_value != Min_value`, то параметр считается фиксированным, но **_не влияет_** на на расчет целевой функции;
-> - если `Init_value == Min_value`, то параметр считается фиксированным, но **_влияет_** на расчет целевой функции.
+> **Note:** The `Prod_index` and `Inj_index` parameters, for which `Min_value == Max_value` is true, are further divided into the following groups:
+> - if `Init_value != Min_value`, then the parameter is considered fixed, but **_does not_** affect the calculation of the objective function;
+> - if `Init_value == Min_value`, then the parameter is considered fixed, but **_do_** affects the calculation of the objective function.
 
-### История добычи/закачки
+### History of production/injection
 
-История добычи/закачки для каждого блока хранится в файле `tank_prod.csv`.
+The production/injection history for each tank is stored in the `tank_prod.csv` file.
 
-| Заголовок     | Тип           | Описание |
+| Header     | Type           | Description |
 | :---:         |     :---:     |     :--- |
-| `Field` | `String` | Название месторождения |
-| `Tank` | `String` | Идентификатор блока |
-| `Reservoir` | `String` | Название пласта |
-| `Date` | `Date` | Дата записи в формате `dd.mm.yyyy` |
-| `Qoil` | `Float64` | Дебит нефти (м<sup>3</sup>/сут) |
-| `Qwat` | `Float64` | Дебит воды (м<sup>3</sup>/сут) |
-| `Qliq` | `Float64` | Дебит жидкости (м<sup>3</sup>/сут) (`Qliq = Qoil + Qwat`) |
-| `Qinj` | `Float64` | Приемистость (м<sup>3</sup>/сут) |
-| `Pres` | `Union{Missing, Float64}` | Замер пластового давления (бар) |
-| `Source_resp` | `Union{Missing, String}` | Текстовое обозначение источника замера пластового давления |
-| `Pbhp_prod` | `Union{Missing, Float64}` | Замер забойного давления добывающей скважины (бар) |
-| `Pbhp_inj` | `Union{Missing, Float64}` | Замер забойного давления нагнетательной скважины (бар) |
-| `Source_bhp` | `Union{Missing, String}` | Текстовое обозначение источника замера забойного давления |
-| `Wellwork` | `Union{Missing, String}` | Текстовое обозначение проведенного геолого-технологического мероприятия |
-| `Wcut` | `Float64` | Обводненность (д.ед.) |
-| `Total_mobility` | `Float64` | Суммарная подвижность флюида (1/сПз) |
-| `Wres` | `Union{Missing, Float64}` | Вес замера пластового давления |
-| `Wbhp_prod` | `Union{Missing, Float64}` | Вес замера забойного давления добывающей скважины |
-| `Wbhp_inj` | `Union{Missing, Float64}` | Вес замера забойного нагнетательной добывающей скважины |
-| `Pres_min` | `Union{Missing, Float64}` | Минимально допустимое значение расчетного пластового давления |
-| `Pres_max` | `Union{Missing, Float64}` | Максимально допустимое значение расчетного пластового давления |
+| `Field` | `String` | Field name |
+| `Tank` | `String` | Tank name |
+| `Reservoir` | `String` | Reservoir name |
+| `Date` | `Date` | Record date formatted as `dd.mm.yyyy` |
+| `Qoil` | `Float64` | Oil flow rate (m<sup>3</sup>/day) |
+| `Qwat` | `Float64` | Water flow rate (m<sup>3</sup>/day) |
+| `Qliq` | `Float64` | Liquid flow rate (m<sup>3</sup>/day) (`Qliq = Qoil + Qwat`) |
+| `Qinj` | `Float64` | Injection flow rate (m<sup>3</sup>/day) |
+| `Pres` | `Union{Missing, Float64}` | Reservoir pressure measurement (bar) |
+| `Source_resp` | `Union{Missing, String}` | Text designation of reservoir pressure measurement source |
+| `Pbhp_prod` | `Union{Missing, Float64}` | Bottom-hole pressure measurement of producer (bar) |
+| `Pbhp_inj` | `Union{Missing, Float64}` | Bottom-hole pressure measurement of injector (bar) |
+| `Source_bhp` | `Union{Missing, String}` | Text designation of bottom-hole pressure measurement source |
+| `Wellwork` | `Union{Missing, String}` | Text designation of the carried out workover |
+| `Wcut` | `Float64` | Water-cut (frac.) |
+| `Total_mobility` | `Float64` | Total fluid mobility (1/cPs) |
+| `Wres` | `Union{Missing, Float64}` | Weight of reservoir pressure measurement |
+| `Wbhp_prod` | `Union{Missing, Float64}` | Weight of bottom-hole pressure measurement of producer |
+| `Wbhp_inj` | `Union{Missing, Float64}` | Weight of bottom-hole pressure measurement of injector |
+| `Pres_min` | `Union{Missing, Float64}` | The minimum allowable value of the calculated reservoir pressure |
+| `Pres_max` | `Union{Missing, Float64}` | The maximum allowable value of the calculated reservoir pressure |
 
-> **Примечание:** Для корректного учета начальных условий на самую раннюю дату должна быть нулевая добыча/закачка по всем блокам (т.е. `Qoil == Qwat == Qliq == Qinj == 0`).
+> **Note:** To correctly take into account the initial conditions at the earliest date, there should be zero production/injection rates for all tanks (i.e. `Qoil == Qwat == Qliq == Qinj == 0`).
 
-> **Примечание:** Каждая запись должна быть представлена с шагом в один календарный месяц.
+> **Note:** Each record must be submitted with step size in one calendar month.
