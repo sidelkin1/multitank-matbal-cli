@@ -62,7 +62,7 @@ Inside the directory with the downloaded repository there is the `cli` folder, i
 | `maxiters` | Maximum number of iterations for looping through optimization methods |
 | **[optimizer.[package name]]** | **List of optimization methods from the package `package name`** |
 | `active` | Methods that will be cycled in the process of minimizing the objective function |
-| `methods` | Список параметров метода оптимизации |
+| `methods` | List of optimization method parameters |
 | **[target_fun]** | **Weights of objective function terms** |
 | `alpha_resp` | Reservoir pressure convergence |
 | `alpha_bhp` | Bottom-hole pressure of producers convergence |
