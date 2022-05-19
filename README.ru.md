@@ -17,7 +17,7 @@ git clone https://github.com/sidelkin1/multitank-matbal-cli
 - Запустить `Julia REPL` и выполнить команду 
  
 ```julia
-pwd("path/to/multitank-matbal-cli")
+cd("path/to/multitank-matbal-cli")
 ```
 
 где требуется указать правильный путь к скачанному CLI репозиторию.
