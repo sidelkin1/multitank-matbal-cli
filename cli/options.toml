@@ -5,7 +5,7 @@ dateformat = "dd.mm.yyyy"
 delim = ";"
 
 [solver]
-linalg = "recursive"
+linalg = "sparse"
 reorder = "amd"
 maxiters = 10
 P_tol = 1e-7
